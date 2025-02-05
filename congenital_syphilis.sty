@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, shapes.geometric, backgrounds}
+\begin{document}
+\begin{tikzpicture}[->,>=stealth,node distance=2cm,line width=1.5pt]
+    % Define elliptical state style
+    \tikzset{state/.style={
+        draw,
+        ellipse,
+        minimum width=2.5cm,
+        minimum height=1.8cm,
+        align=center
+    },
+    decision/.style={
+        draw=blue,
+        rectangle,
+        minimum width=6cm,
+        minimum height=1.8cm,
+        align=center
+    },
+    pregnancy/.style={
+        draw=gray!50,
+        dashed
+    }}
+    
+    % Define states
+    \node[state] (UninfectedMother) {Uninfected \\ Mother};
+    \node[state] (InfectedMother) [right=2cm of UninfectedMother] {Infected \\ Mother};
+    % Define the decision box
+    \node[decision] (Pregnancy) [below=1.0cm of UninfectedMother, xshift=2.25cm] {\textbf{Screened}};
+    % Define fetus states
+    \node[state] (UninfectedFetus) [below=4cm of UninfectedMother] {Uninfected \\ Fetus};
+    \node[state] (InfectedFetus) [below=4cm of InfectedMother] {Infected \\ Fetus};
+    
+    % Lower states for outcomes
+    \node[state] (HealthyBirth) [below=2cm of UninfectedFetus] {Healthy \\ Birth};
+    \node[state] (EarlyCS) [below left=5cm and 3cm of InfectedFetus] { Congenital \\ Syphilis};
+    \node[state] (LateCS) [below=5cm of InfectedFetus] {IUGR};
+    \node[state] (Death) [below right=5cm and 3cm of InfectedFetus] {Fetal/Infant \\ Death};
+    
+    % Add self-loops
+    \draw (UninfectedMother) edge[out=45,in=85,looseness=5] (UninfectedMother);
+    \draw (InfectedMother) edge[out=45,in=85,looseness=5] (InfectedMother);
+    \draw (UninfectedFetus) edge[out=45,in=85,looseness=5] (UninfectedFetus);
+    \draw (InfectedFetus) edge[out=45,in=85,looseness=5] (InfectedFetus);
+    \draw (HealthyBirth) edge[out=45,in=85,looseness=5] (HealthyBirth);
+    \draw (EarlyCS) edge[out=-45,in=-85,looseness=5] (EarlyCS);
+    \draw (LateCS) edge[out=45,in=85,looseness=5] (LateCS);
+    \draw (Death) edge[out=45,in=85,looseness=5] (Death);
+    
+    % Draw transitions
+    \draw (UninfectedMother) -- (InfectedMother);
+    
+    \draw[pregnancy] (UninfectedMother) -- (UninfectedFetus);
+    \draw[pregnancy] (InfectedMother) -- (InfectedFetus);
+    \draw[pregnancy] (InfectedMother) -- (UninfectedFetus);  % If treated during pregnancy
+
+    \draw (UninfectedFetus) -- (HealthyBirth);
+    \draw[dashed] (UninfectedFetus) -- (Death);
+    \draw[dashed] (UninfectedFetus) -- (LateCS);
+    % Outcomes for infected fetus
+    \draw (InfectedFetus) -- (EarlyCS);
+    \draw (InfectedFetus) -- (LateCS);
+    \draw (InfectedFetus) -- (Death);
+    
+    % Progression from early to late CS
+    \draw[<-] (EarlyCS) -- (LateCS);
+    \draw[->] (LateCS) -- (Death);
+    
+    % Treatment paths
+
+
+\end{tikzpicture}
+\end{document}

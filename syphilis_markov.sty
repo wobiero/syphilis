@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, shapes.geometric}
+
+\begin{document}
+
+\begin{tikzpicture}[->,>=stealth,node distance=2cm,line width=1.5pt]
+    % Define elliptical state style
+    \tikzset{state/.style={
+        draw,
+        ellipse,
+        minimum width=2.5cm,
+        minimum height=1.8cm,
+        align=center
+    }}
+    
+    % Define states
+    \node[state] (NeverInfected) {Never \\ infected};
+    \node[state] (Primary) [right=.95cm of NeverInfected] {Primary \\ syphilis};
+    \node[state] (Secondary) [below=.95cm of Primary] {Secondary \\ syphilis};
+    \node[state] (EarlyLatent) [below=.95cm of Secondary] {Early \\ latent \\ syphilis};
+    \node[state] (LateLatent) [below=.95cm of EarlyLatent] {Late \\ latent \\ syphilis};
+    \node[state] (Tertiary) [below=.95cm of LateLatent] {Tertiary \\ syphilis};
+    
+    \node[state] (PrevInfected) [right=.5cm of Primary, xshift=1.5cm] {Previously \\ infected and \\ treated};
+    \node[state] (TreatedLate) [right of=LateLatent, xshift=3cm] {Treated \\ late \\ infection};
+    
+    \node[state] (EarlyNeuro) [left of=Secondary, xshift=-3cm] {Early \\ neurosyphilis};
+    \node[state] (LateNeuro) [left of=LateLatent, xshift=-3cm] {Late \\ neurosyphilis};
+    \node[state] (Death) [right of=EarlyLatent, xshift=5cm] {Death};
+    
+    % Draw transitions
+    \draw (NeverInfected) edge[out=45,in=85,looseness=5] (NeverInfected);
+    \draw (Primary) edge[out=45,in=85,looseness=5] (Primary);
+    \draw (Secondary) edge[out=45,in=85,looseness=5] (Secondary);
+    \draw (EarlyLatent) edge[out=45,in=85,looseness=5] (EarlyLatent);
+    \draw (LateLatent) edge[out=45,in=85,looseness=5] (LateLatent);
+    \draw (Tertiary) edge[out=45,in=85,looseness=5] (Tertiary);
+    \draw (EarlyNeuro) edge[out=45,in=85,looseness=5] (EarlyNeuro);
+    \draw (LateNeuro) edge[out=45,in=85,looseness=5] (LateNeuro);
+    \draw (TreatedLate) edge[out=45,in=85,looseness=5] (TreatedLate);
+    \draw (Death) edge[out=45,in=85,looseness=5] (Death);
+    
+    % Main progression path
+    \draw (NeverInfected) -- (Primary);
+    \draw (Primary) -- (Secondary);
+    \draw (Secondary) -- (EarlyLatent);
+    \draw (EarlyLatent) -- (LateLatent);
+    \draw (LateLatent) -- (Tertiary);
+    
+    % Neurosyphilis paths
+    \draw (EarlyNeuro) -- (LateNeuro);
+    \draw (LateNeuro) |- (Tertiary);
+    \draw (Secondary) -| (PrevInfected);
+    
+    % Treatment and recurrence paths
+    \draw (PrevInfected) -- (Primary);
+    \draw (Primary) -- (EarlyNeuro);
+    \draw (Secondary) -- (EarlyNeuro);
+    \draw (EarlyLatent) -- (EarlyNeuro);
+    \draw (LateLatent) edge[left] (TreatedLate);
+    \draw (LateLatent) edge[right] (LateNeuro);
+    \draw (TreatedLate) -- ([xshift=.3cm]PrevInfected.south);
+    \draw[<->] (Tertiary) -- ++(0,-2) -- ++(5,0) --++(0,2) -- (TreatedLate);
+    \draw[<->] (Tertiary) -- ++(0,-2) -- ++(-7,0) -- ++(0,11) -- (EarlyNeuro);
+\end{tikzpicture}
+
+\end{document}
